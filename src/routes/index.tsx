@@ -42,19 +42,19 @@ function Index() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-black text-white">
-      {/* Fullscreen canvas background */}
-      <div className="fixed inset-0 z-0">
-        <NeuralHexagon onAssembled={() => setAssembled(true)} />
-      </div>
-
-      {/* radial vignette */}
+      {/* radial vignette (behind canvas) */}
       <div
-        className="pointer-events-none fixed inset-0 z-[1]"
+        className="pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            "radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,0.95) 100%)",
+            "radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 80%, rgba(0,0,0,0.9) 100%)",
         }}
       />
+
+      {/* Fullscreen canvas — elevated so particles render crisply on top */}
+      <div className="pointer-events-none fixed inset-0 z-[5]">
+        <NeuralHexagon onAssembled={() => setAssembled(true)} />
+      </div>
 
       <div className="relative z-10 flex min-h-screen flex-col px-6 py-8 sm:px-10 sm:py-10">
         {/* Top brand mark */}
