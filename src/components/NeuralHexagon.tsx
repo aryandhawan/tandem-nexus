@@ -5,8 +5,9 @@ interface Particle {
   y: number;
   vx: number;
   vy: number;
-  tx: number; // target x
-  ty: number; // target y
+  tx: number;
+  ty: number;
+  r: number;
   isVertex: boolean;
   vertexIndex: number;
 }
@@ -20,8 +21,8 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
   const [assembled, setAssembled] = useState(false);
   const assembledRef = useRef(false);
   const startTimeRef = useRef<number>(0);
-  const ASSEMBLY_DELAY = 1800; // ms before assembly starts
-  const ASSEMBLY_DURATION = 2600; // ms to complete
+  const ASSEMBLY_DELAY = 2000;
+  const ASSEMBLY_DURATION = 2800;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,17 +36,16 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
     let particles: Particle[] = [];
     let hexVertices: { x: number; y: number }[] = [];
 
-    const PARTICLE_COUNT = window.innerWidth < 640 ? 70 : 130;
+    const PARTICLE_COUNT = window.innerWidth < 640 ? 90 : 160;
     const VERTEX_COUNT = 6;
 
     const computeHex = () => {
       const cx = width / 2;
       const cy = height / 2;
-      const radius = Math.min(width, height) * (window.innerWidth < 640 ? 0.22 : 0.18);
+      const radius = Math.min(width, height) * (window.innerWidth < 640 ? 0.34 : 0.28);
       hexVertices = [];
-      // Pointy-top hexagon — start at -90deg
       for (let i = 0; i < VERTEX_COUNT; i++) {
-        const angle = (-Math.PI / 2) + (i * Math.PI * 2) / VERTEX_COUNT;
+        const angle = -Math.PI / 2 + (i * Math.PI * 2) / VERTEX_COUNT;
         hexVertices.push({
           x: cx + Math.cos(angle) * radius,
           y: cy + Math.sin(angle) * radius,
@@ -60,10 +60,11 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
           tx: 0,
           ty: 0,
+          r: isVertex ? 3.5 : 2 + Math.random() * 1.5,
           isVertex,
           vertexIndex: isVertex ? i : -1,
         });
@@ -71,19 +72,17 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
     };
 
     const assignTargets = () => {
-      // Vertex particles → vertices
       particles.forEach((p) => {
         if (p.isVertex) {
           const v = hexVertices[p.vertexIndex];
           p.tx = v.x;
           p.ty = v.y;
         } else {
-          // distribute along the hexagon edges
           const edgeIndex = Math.floor(Math.random() * VERTEX_COUNT);
           const t = Math.random();
           const a = hexVertices[edgeIndex];
           const b = hexVertices[(edgeIndex + 1) % VERTEX_COUNT];
-          const jitter = (Math.random() - 0.5) * 6;
+          const jitter = (Math.random() - 0.5) * 4;
           const nx = -(b.y - a.y);
           const ny = b.x - a.x;
           const nl = Math.hypot(nx, ny) || 1;
@@ -97,9 +96,10 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
       const rect = canvas.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
+      if (width === 0 || height === 0) return;
       dpr = window.devicePixelRatio || 1;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       computeHex();
       assignTargets();
@@ -126,12 +126,14 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
 
       ctx.clearRect(0, 0, width, height);
 
-      // Update particles: blend free motion → target
       particles.forEach((p) => {
-        // free drift
+        // Brownian drift
+        p.vx += (Math.random() - 0.5) * 0.05;
+        p.vy += (Math.random() - 0.5) * 0.05;
+        p.vx = Math.max(-0.6, Math.min(0.6, p.vx));
+        p.vy = Math.max(-0.6, Math.min(0.6, p.vy));
         p.x += p.vx;
         p.y += p.vy;
-        // soft wall bounce
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
 
@@ -141,8 +143,8 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
         }
       });
 
-      // Draw connecting lines among nearby particles (faint)
-      const connectDist = 90;
+      // connecting lines
+      const connectDist = 110;
       ctx.lineWidth = 1;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -152,7 +154,8 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
           const dy = a.y - b.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < connectDist * connectDist) {
-            const alpha = (1 - Math.sqrt(d2) / connectDist) * 0.18 * (1 - eased * 0.6);
+            const proximity = 1 - Math.sqrt(d2) / connectDist;
+            const alpha = proximity * (0.25 + eased * 0.55);
             ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -162,11 +165,11 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
         }
       }
 
-      // Draw hexagon edges as they form
-      if (eased > 0.2) {
-        const hexAlpha = Math.min(1, (eased - 0.2) / 0.8) * 0.85;
+      // hexagon outline
+      if (eased > 0.15) {
+        const hexAlpha = Math.min(1, (eased - 0.15) / 0.85);
         ctx.strokeStyle = `rgba(255,255,255,${hexAlpha})`;
-        ctx.lineWidth = 1.2;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         for (let i = 0; i < hexVertices.length; i++) {
           const v = hexVertices[i];
@@ -176,19 +179,17 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
         ctx.closePath();
         ctx.stroke();
 
-        // soft glow pass
-        ctx.shadowBlur = 18;
-        ctx.shadowColor = `rgba(255,255,255,${hexAlpha * 0.5})`;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = `rgba(255,255,255,${hexAlpha * 0.6})`;
         ctx.stroke();
         ctx.shadowBlur = 0;
       }
 
-      // Draw particles
+      // particles - solid bright white
       particles.forEach((p) => {
-        const r = p.isVertex ? 2.6 : 1.6;
-        ctx.fillStyle = `rgba(255,255,255,${p.isVertex ? 0.95 : 0.7})`;
+        ctx.fillStyle = "rgba(255,255,255,1)";
         ctx.beginPath();
-        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       });
 
@@ -212,7 +213,7 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 h-full w-full"
+      className="absolute inset-0 h-full w-full block"
       aria-hidden="true"
       data-assembled={assembled}
     />
