@@ -56,54 +56,54 @@ function Index() {
         <NeuralHexagon onAssembled={() => setAssembled(true)} />
       </div>
 
-      <div className="relative z-10 flex min-h-screen flex-col px-6 py-8 sm:px-10 sm:py-10">
-        {/* Top brand mark */}
-        <header className="flex w-full items-center justify-between text-xs uppercase tracking-[0.3em] text-white/70">
-          <span>Tandem</span>
-          <span className="hidden sm:inline">est. 2026</span>
-        </header>
+      {/* Header — fixed at top edge */}
+      <header className="fixed left-0 right-0 top-0 z-20 flex items-center justify-between px-6 py-6 text-xs uppercase tracking-[0.3em] text-white/70 sm:px-10">
+        <span>Tandem</span>
+        <span className="hidden sm:inline">est. 2026</span>
+      </header>
 
-        {/* Center stage — text overlaid on the global canvas */}
-        <section className="relative flex w-full flex-1 flex-col items-center justify-center py-10">
-          {/* Brand name — appears ABOVE the hexagon after assembly (containment aesthetic) */}
-          <div className="pointer-events-none mb-[clamp(180px,28vh,260px)] flex flex-col items-center">
-            <AnimatePresence>
-              {assembled && (
-                <motion.h1
-                  key="brand"
-                  initial={{ opacity: 0, scale: 0.6, filter: "blur(14px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                  className="text-center"
-                >
-                  <span className="block text-3xl font-bold tracking-tight text-white sm:text-5xl glow-text">
-                    Tandem AI Labs
-                  </span>
-                  <motion.span
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4, duration: 0.6 }}
-                    className="mt-3 block text-[10px] uppercase tracking-[0.4em] text-white/60 sm:text-xs"
-                  >
-                    Intelligence · In Tandem
-                  </motion.span>
-                </motion.h1>
-              )}
-            </AnimatePresence>
-          </div>
+      {/* COMING SOON — mathematically centered on viewport (matches canvas center) */}
+      <motion.h2
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: assembled ? 0.4 : 1, scale: 1 }}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className={`pointer-events-none fixed left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-center text-xl font-light tracking-[0.4em] text-white sm:text-2xl ${assembled ? "" : "animate-breathe"}`}
+      >
+        COMING&nbsp;SOON
+      </motion.h2>
 
-          {/* "Coming Soon" — stays INSIDE the hexagon, fades to subtle opacity after assembly */}
-          <motion.h2
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: assembled ? 0.35 : 1, scale: 1 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className={`pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-xl font-light tracking-[0.4em] text-white sm:text-2xl ${assembled ? "" : "animate-breathe"}`}
-          >
-            COMING&nbsp;SOON
-          </motion.h2>
-        </section>
+      {/* Tandem AI Labs brand — above the hexagon, after assembly */}
+      <div className="pointer-events-none fixed left-1/2 top-1/2 z-10 -translate-x-1/2 flex flex-col items-center" style={{ marginTop: "-340px" }}>
+        <AnimatePresence>
+          {assembled && (
+            <motion.div
+              key="brand"
+              initial={{ opacity: 0, scale: 0.6, filter: "blur(14px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center"
+            >
+              <span className="block text-3xl font-bold tracking-tight text-white sm:text-5xl glow-text whitespace-nowrap">
+                Tandem AI Labs
+              </span>
+              <motion.span
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="mt-3 block text-[10px] uppercase tracking-[0.4em] text-white/60 sm:text-xs whitespace-nowrap"
+              >
+                Intelligence · In Tandem
+              </motion.span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-        {/* Automation + Contact panel */}
+      <div className="relative z-10 flex min-h-screen flex-col px-6 pb-10 pt-24 sm:px-10">
+        {/* spacer reserves the hexagon's vertical area so the panel sits BELOW it */}
+        <div className="flex-1" style={{ minHeight: "min(640px, 80vh)" }} />
+
+        {/* Automation + Contact panel — below hexagon */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: assembled ? 1 : 0.3, y: assembled ? 0 : 20 }}
