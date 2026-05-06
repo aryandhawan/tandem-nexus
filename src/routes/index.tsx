@@ -67,13 +67,13 @@ function Index() {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: assembled ? 0.4 : 1, scale: 1 }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className={`pointer-events-none fixed left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-center text-xl font-light tracking-[0.4em] text-white sm:text-2xl ${assembled ? "" : "animate-breathe"}`}
+        className={`pointer-events-none fixed left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-center text-xl font-light tracking-[0.4em] text-white sm:text-2xl glow-text drop-shadow-[0_0_18px_rgba(255,255,255,0.7)] ${assembled ? "" : "animate-breathe"}`}
       >
         COMING&nbsp;SOON
       </motion.h2>
 
       {/* Tandem AI Labs brand — above the hexagon, after assembly */}
-      <div className="pointer-events-none fixed left-1/2 top-1/2 z-10 -translate-x-1/2 flex flex-col items-center" style={{ marginTop: "-340px" }}>
+      <div className="pointer-events-none fixed left-1/2 top-1/2 z-10 -translate-x-1/2 flex flex-col items-center" style={{ marginTop: "-230px" }}>
         <AnimatePresence>
           {assembled && (
             <motion.div
