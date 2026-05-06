@@ -64,24 +64,14 @@ function Index() {
         </header>
 
         {/* Center stage — text overlaid on the global canvas */}
-        <section className="relative flex w-full flex-1 items-center justify-center py-10">
-          <div className="pointer-events-none flex items-center justify-center">
-            <AnimatePresence mode="wait">
-              {!assembled ? (
-                <motion.h2
-                  key="coming"
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.5, filter: "blur(10px)" }}
-                  transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                  className="animate-breathe text-center text-2xl font-light tracking-[0.4em] text-white sm:text-3xl"
-                >
-                  COMING&nbsp;SOON
-                </motion.h2>
-              ) : (
+        <section className="relative flex w-full flex-1 flex-col items-center justify-center py-10">
+          {/* Brand name — appears ABOVE the hexagon after assembly (containment aesthetic) */}
+          <div className="pointer-events-none mb-[clamp(180px,28vh,260px)] flex flex-col items-center">
+            <AnimatePresence>
+              {assembled && (
                 <motion.h1
                   key="brand"
-                  initial={{ opacity: 0, scale: 0.4, filter: "blur(14px)" }}
+                  initial={{ opacity: 0, scale: 0.6, filter: "blur(14px)" }}
                   animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                   transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
                   className="text-center"
@@ -92,7 +82,7 @@ function Index() {
                   <motion.span
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
+                    transition={{ delay: 0.4, duration: 0.6 }}
                     className="mt-3 block text-[10px] uppercase tracking-[0.4em] text-white/60 sm:text-xs"
                   >
                     Intelligence · In Tandem
@@ -101,6 +91,16 @@ function Index() {
               )}
             </AnimatePresence>
           </div>
+
+          {/* "Coming Soon" — stays INSIDE the hexagon, fades to subtle opacity after assembly */}
+          <motion.h2
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: assembled ? 0.35 : 1, scale: 1 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className={`pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-xl font-light tracking-[0.4em] text-white sm:text-2xl ${assembled ? "" : "animate-breathe"}`}
+          >
+            COMING&nbsp;SOON
+          </motion.h2>
         </section>
 
         {/* Automation + Contact panel */}
