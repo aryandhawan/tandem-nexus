@@ -21,8 +21,8 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
   const [assembled, setAssembled] = useState(false);
   const assembledRef = useRef(false);
   const startTimeRef = useRef<number>(0);
-  const ASSEMBLY_DELAY = 2200;
-  const ASSEMBLY_DURATION = 2600;
+  const ASSEMBLY_DELAY = 1500;
+  const ASSEMBLY_DURATION = 2000;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -98,19 +98,24 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      width = rect.width;
-      height = rect.height;
+      const newW = rect.width || window.innerWidth;
+      const newH = rect.height || window.innerHeight;
+      const wasEmpty = width === 0 || height === 0;
+      width = newW;
+      height = newH;
       if (width === 0 || height === 0) return;
       dpr = window.devicePixelRatio || 1;
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       computeHex();
+      if (wasEmpty || particles.length === 0) initParticles();
       assignTargets();
     };
 
-    initParticles();
     resize();
+
+
 
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
@@ -198,10 +203,16 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
         ctx.fill();
       });
 
-      if (progress >= 1 && !assembledRef.current) {
-        assembledRef.current = true;
-        setAssembled(true);
-        onAssembled?.();
+      if (!assembledRef.current && eased > 0) {
+        let allClose = true;
+        for (const p of particles) {
+          if (Math.hypot(p.x - p.tx, p.y - p.ty) > 5) { allClose = false; break; }
+        }
+        if (allClose || progress >= 1) {
+          assembledRef.current = true;
+          setAssembled(true);
+          onAssembled?.();
+        }
       }
 
       raf = requestAnimationFrame(render);
