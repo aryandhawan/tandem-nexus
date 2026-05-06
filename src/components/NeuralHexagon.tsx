@@ -98,8 +98,22 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      width = rect.width;
-      height = rect.height;
+      const newW = rect.width || window.innerWidth;
+      const newH = rect.height || window.innerHeight;
+      const wasEmpty = width === 0 || height === 0;
+      width = newW;
+      height = newH;
+      if (width === 0 || height === 0) return;
+      dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      computeHex();
+      if (wasEmpty || particles.length === 0) initParticles();
+      assignTargets();
+    };
+
+    resize();
       if (width === 0 || height === 0) return;
       dpr = window.devicePixelRatio || 1;
       canvas.width = Math.floor(width * dpr);
