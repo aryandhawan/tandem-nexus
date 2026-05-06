@@ -114,17 +114,8 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
     };
 
     resize();
-      if (width === 0 || height === 0) return;
-      dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      computeHex();
-      assignTargets();
-    };
 
-    initParticles();
-    resize();
+
 
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
