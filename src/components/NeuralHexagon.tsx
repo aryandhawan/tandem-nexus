@@ -203,10 +203,16 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
         ctx.fill();
       });
 
-      if (progress >= 1 && !assembledRef.current) {
-        assembledRef.current = true;
-        setAssembled(true);
-        onAssembled?.();
+      if (!assembledRef.current && eased > 0) {
+        let allClose = true;
+        for (const p of particles) {
+          if (Math.hypot(p.x - p.tx, p.y - p.ty) > 5) { allClose = false; break; }
+        }
+        if (allClose || progress >= 1) {
+          assembledRef.current = true;
+          setAssembled(true);
+          onAssembled?.();
+        }
       }
 
       raf = requestAnimationFrame(render);
