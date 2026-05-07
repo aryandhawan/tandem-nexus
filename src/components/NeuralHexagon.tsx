@@ -10,7 +10,10 @@ interface Particle {
   tx: number;
   ty: number;
   r: number;
-  edge: number; // which hex edge (0..5) this particle belongs to
+  edge: number;
+  phase: number; // wave phase offset
+  freq: number;  // wave frequency
+  amp: number;   // wave amplitude
 }
 
 interface NeuralHexagonProps {
