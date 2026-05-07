@@ -92,7 +92,7 @@ function Index() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-xl font-light tracking-[0.4em] text-white sm:text-2xl glow-text animate-breathe"
+              className="text-xl font-light tracking-[0.4em] sm:text-2xl shimmer-text animate-breathe"
             >
               COMING&nbsp;SOON
             </motion.h2>
