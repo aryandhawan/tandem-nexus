@@ -22,8 +22,8 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
   const [assembled, setAssembled] = useState(false);
   const assembledRef = useRef(false);
   const startTimeRef = useRef<number>(0);
-  const ASSEMBLY_DELAY = 800;
-  const ASSEMBLY_DURATION = 3500; // 3.5s cinematic lock
+    const ASSEMBLY_DELAY = 250; // brief chaos glimpse, then immediately assemble
+    const ASSEMBLY_DURATION = 2200; // smooth cinematic lock
 
   useEffect(() => {
     const canvas = canvasRef.current;
