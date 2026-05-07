@@ -148,21 +148,35 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
 
       ctx.clearRect(0, 0, width, height);
 
+      const t = time / 1000;
       particles.forEach((p) => {
         if (!capturedStart) {
-          // Chaos: slow wandering
-          p.vx += (Math.random() - 0.5) * 0.04;
-          p.vy += (Math.random() - 0.5) * 0.04;
-          p.vx = Math.max(-0.5, Math.min(0.5, p.vx));
-          p.vy = Math.max(-0.5, Math.min(0.5, p.vy));
+          // Smooth flow-field wandering — gentle sinusoidal acceleration
+          p.vx += Math.sin(t * 0.6 + p.phase) * 0.012 + (Math.random() - 0.5) * 0.008;
+          p.vy += Math.cos(t * 0.5 + p.phase * 1.3) * 0.012 + (Math.random() - 0.5) * 0.008;
+          p.vx *= 0.985; // damping for silky motion
+          p.vy *= 0.985;
+          p.vx = Math.max(-0.45, Math.min(0.45, p.vx));
+          p.vy = Math.max(-0.45, Math.min(0.45, p.vy));
           p.x += p.vx;
           p.y += p.vy;
           if (p.x < 0 || p.x > width) p.vx *= -1;
           if (p.y < 0 || p.y > height) p.vy *= -1;
         } else {
-          // Smooth interpolation from captured start to target
-          p.x = p.sx + (p.tx - p.sx) * eased;
-          p.y = p.sy + (p.ty - p.sy) * eased;
+          // Curved, wavy path from start → target with perpendicular sine offset
+          const baseX = p.sx + (p.tx - p.sx) * eased;
+          const baseY = p.sy + (p.ty - p.sy) * eased;
+          const dx = p.tx - p.sx;
+          const dy = p.ty - p.sy;
+          const len = Math.hypot(dx, dy) || 1;
+          // perpendicular unit vector
+          const px = -dy / len;
+          const py = dx / len;
+          // wave swells in the middle (sin(pi*progress)) and decays as we lock in
+          const swell = Math.sin(Math.PI * progress) * (1 - eased * 0.85);
+          const wave = Math.sin(progress * Math.PI * p.freq * 2 + p.phase) * p.amp * swell;
+          p.x = baseX + px * wave;
+          p.y = baseY + py * wave;
         }
       });
 
