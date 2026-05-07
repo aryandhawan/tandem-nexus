@@ -67,14 +67,17 @@ export function NeuralHexagon({ onAssembled }: NeuralHexagonProps) {
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
           sx: 0,
           sy: 0,
           tx: 0,
           ty: 0,
           r: 3,
           edge: 0,
+          phase: Math.random() * Math.PI * 2,
+          freq: 0.6 + Math.random() * 0.8,
+          amp: 18 + Math.random() * 28,
         });
       }
     };
