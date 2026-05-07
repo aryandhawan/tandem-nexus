@@ -80,7 +80,7 @@ function Index() {
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-4 block text-xs font-light tracking-[0.4em] text-white sm:text-sm drop-shadow-[0_0_18px_rgba(255,255,255,0.75)]"
+                className="mt-4 block text-xs font-light tracking-[0.4em] sm:text-sm shimmer-text"
               >
                 COMING&nbsp;SOON
               </motion.span>
@@ -92,7 +92,7 @@ function Index() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-xl font-light tracking-[0.4em] text-white sm:text-2xl glow-text animate-breathe"
+              className="text-xl font-light tracking-[0.4em] sm:text-2xl shimmer-text animate-breathe"
             >
               COMING&nbsp;SOON
             </motion.h2>
